@@ -1,4 +1,4 @@
-package shop.server.controller;
+package shop.server.rest.internal;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,15 +16,18 @@ import shop.server.service.ProductService;
 
 @RestController
 @RequestMapping("/api/v1/internal")
-@RequiredArgsConstructor
 @Slf4j
-public class ProductController {
+public class ProductIntApi {
     private final ProductService productService;
+
+    public ProductIntApi(ProductService productService) {
+        this.productService=productService;
+    }
 
     // lay DS sp
     @GetMapping("/list")
     public ApiBaseResp list(@RequestParam SpringDataWebProperties.Pageable pageable, @RequestParam String search) {
-        return new ApiBaseResp();
+        return new ApiBaseResp(null);
     }
 
     //Lay SP theo ma Code
@@ -37,13 +40,13 @@ public class ProductController {
     @PostMapping("/")
     public ApiBaseResp saveProduct(@RequestBody ProductDto productDto) {
         productService.saveProduct(productDto);
-        return new ApiBaseResp();
+        return new ApiBaseResp(null);
     }
 
     // xoa SP
     @DeleteMapping("/{code}")
     public ApiBaseResp deleteProduct(@PathVariable String code){
         productService.deleteProduct(code);
-        return new ApiBaseResp();
+        return new ApiBaseResp(null);
     }
 }

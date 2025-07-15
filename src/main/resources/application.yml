@@ -5,4 +5,12 @@ spring:
     hibernate:
       ddl-auto: update
     database: mysql
+    show-sql: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/Restaurant
+    username: username
+    password: pass
+#    driver-class-name: com.mysql.jdbc.Driver
 
+service:
+  secret-key: fashion
