@@ -1,0 +1,17 @@
+package shop.server.repo;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+import shop.server.model.entity.ProductEntity;
+
+import java.util.Optional;
+
+/**
+ * @author : Nguyen Quoc Hung
+ * @mailto : hungnqdatn04@gmail.com
+ * @created : 16/7/2025,
+ **/
+@Repository
+public interface ProductRepo extends CrudRepository<ProductEntity,Long> {
+    Optional<ProductEntity> findByCode(String code);
+}

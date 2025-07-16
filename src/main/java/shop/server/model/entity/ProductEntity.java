@@ -32,6 +32,6 @@ public class ProductEntity {
     //SP cha chứa các thông tin tong quat de show ra cho nguoi dung xem,
     //SP con chứa các thông tin cụ thể để bán
     @OneToMany(mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.REMOVE}, orphanRemoval = true)
+            CascadeType.REMOVE}, orphanRemoval = true,fetch = FetchType.EAGER)
     private List<ProductDetailEntity> children;
 }

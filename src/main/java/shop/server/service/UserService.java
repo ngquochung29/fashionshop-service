@@ -13,10 +13,10 @@ import java.util.List;
  * @created : 16/7/2025,
  **/
 public interface UserService {
-    void addUser(User user);
-    void updateUser(User user);
-    void deleteUser(int id);
-    User getUser(int id);
+    void addUser(UserDto user);
+    void updateUser(UserDto user);
+    void deleteUser(long id);
+    User getUser(String username);
     List<User> getUsers();
     AuthDto checkUser(AuthRequest authRequest);
 }

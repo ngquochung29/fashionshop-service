@@ -28,10 +28,7 @@ public class ProductDetailEntity {
     private String price;
     private String quantity;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", referencedColumnName = "id")
     private ProductEntity parent;
-
-    @ManyToMany(mappedBy = "productDetails", fetch = FetchType.LAZY)
-    private List<Transaction> transactions;
 }
