@@ -1,5 +1,6 @@
 package shop.server.webconfig.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +21,8 @@ import io.jsonwebtoken.security.Keys;
  **/
 @Component
 public class JwtUtil {
-    private final String ACCESS_SECRET = "access-secret-key-must-be-256bit...";
+    @Value("${service.secret-key}")
+    private String ACCESS_SECRET;
 
     private final long ACCESS_EXPIRATION_MS = 5 * 60 * 1000; // 5 phút
     private final long REFRESH_EXPIRATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 ngày

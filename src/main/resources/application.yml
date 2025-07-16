@@ -7,10 +7,10 @@ spring:
     database: mysql
     show-sql: true
   datasource:
-    url: jdbc:mysql://localhost:3306/fashion_shop
-    username: admin
-    password: admin
+    url: ${DB_URL}
+    username: ${USER}
+    password: ${PASS}
     driver-class-name: com.mysql.jdbc.Driver
 
 service:
-  secret-key: fashion
+  secret-key: ${SECRET_KEY}

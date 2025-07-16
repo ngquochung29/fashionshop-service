@@ -1,6 +1,9 @@
 package shop.server.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.server.model.dto.ProductDto;
+import shop.server.model.dto.ProductQuery;
 
 
 /**
@@ -10,8 +13,9 @@ import shop.server.model.dto.ProductDto;
  **/
 public interface ProductService {
     ProductDto getProductDtoByCode(String code);
-//    Page<ProductDto> getAllProducts();
-    void saveProduct(ProductDto productDto);
+    Page<ProductDto> getAllProducts(ProductQuery query);
+    void createProduct(ProductDto productDto);
+    void updateProduct(ProductDto productDto);
     void deleteProduct(String code);
     void updateQuantity(Long quantity);
 }
