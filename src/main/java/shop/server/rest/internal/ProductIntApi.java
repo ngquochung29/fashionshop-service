@@ -1,5 +1,6 @@
 package shop.server.rest.internal;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
@@ -27,7 +28,7 @@ public class ProductIntApi {
     // lay DS sp
     @GetMapping("/list")
     public ApiBaseResp list(@RequestParam SpringDataWebProperties.Pageable pageable, @RequestParam String search) {
-        return new ApiBaseResp(null);
+        return new ApiBaseResp();
     }
 
     //Lay SP theo ma Code
@@ -36,17 +37,23 @@ public class ProductIntApi {
         return new ApiBaseResp(productService.getProductDtoByCode(code));
     }
 
-    //Them, Sua SP
-    @PostMapping("/")
-    public ApiBaseResp saveProduct(@RequestBody ProductDto productDto) {
-        productService.saveProduct(productDto);
-        return new ApiBaseResp(null);
+    //Them SP
+    @PostMapping("/create")
+    public ApiBaseResp createProduct(@Valid @RequestBody ProductDto productDto) {
+        productService.createProduct(productDto);
+        return new ApiBaseResp();
+    }
+    // sua SP
+    @PutMapping("/update")
+    public ApiBaseResp updateProduct(@RequestBody ProductDto productDto) {
+        productService.updateProduct(productDto);
+        return new ApiBaseResp();
     }
 
     // xoa SP
     @DeleteMapping("/{code}")
     public ApiBaseResp deleteProduct(@PathVariable String code){
         productService.deleteProduct(code);
-        return new ApiBaseResp(null);
+        return new ApiBaseResp();
     }
 }

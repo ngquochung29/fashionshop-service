@@ -17,7 +17,6 @@ import java.sql.Timestamp;
 @Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class ApiBaseResp {
     private HttpStatus status = HttpStatus.OK;
     private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -25,5 +24,8 @@ public class ApiBaseResp {
 
     public ApiBaseResp(Object data) {
         this.data = data;
+    }
+
+    public ApiBaseResp() {
     }
 }
