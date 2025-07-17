@@ -14,3 +14,12 @@ spring:
 
 service:
   secret-key: ${SECRET_KEY}
+
+
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+        web: debug

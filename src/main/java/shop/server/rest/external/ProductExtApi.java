@@ -1,10 +1,13 @@
 package shop.server.rest.external;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.web.bind.annotation.*;
 import shop.server.model.dto.ApiBaseResp;
+import shop.server.model.dto.ProductDto;
+import shop.server.model.dto.ProductQuery;
 import shop.server.service.ProductService;
 
 /**
@@ -14,7 +17,7 @@ import shop.server.service.ProductService;
  **/
 
 @RestController
-@RequestMapping("/api/v1/external")
+@RequestMapping("/api/external/product")
 @Slf4j
 public class ProductExtApi {
     private final ProductService productService;
@@ -25,14 +28,34 @@ public class ProductExtApi {
 
     // lay DS sp
     @GetMapping("/list")
-    public ApiBaseResp list(@RequestParam SpringDataWebProperties.Pageable pageable, @RequestParam String search) {
-        return new ApiBaseResp(null);
+    public ApiBaseResp list(@RequestBody ProductQuery productQuery) {
+        return new ApiBaseResp(productService.getAllProducts(productQuery));
     }
 
     //Lay SP theo ma Code
     @GetMapping("/{code}")
     public ApiBaseResp getProduct(@PathVariable String code) {
         return new ApiBaseResp(productService.getProductDtoByCode(code));
+    }
+
+    //Them SP
+    @PostMapping("/create")
+    public ApiBaseResp createProduct(@Valid @RequestBody ProductDto productDto) {
+        productService.createProduct(productDto);
+        return new ApiBaseResp();
+    }
+    // sua SP
+    @PutMapping("/update")
+    public ApiBaseResp updateProduct(@RequestBody ProductDto productDto) {
+        productService.updateProduct(productDto);
+        return new ApiBaseResp();
+    }
+
+    // xoa SP
+    @DeleteMapping("/{code}")
+    public ApiBaseResp deleteProduct(@PathVariable String code){
+        productService.deleteProduct(code);
+        return new ApiBaseResp();
     }
 
 }

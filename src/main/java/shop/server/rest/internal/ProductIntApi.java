@@ -7,7 +7,10 @@ import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.web.bind.annotation.*;
 import shop.server.model.dto.ApiBaseResp;
 import shop.server.model.dto.ProductDto;
+import shop.server.model.dto.ProductQuery;
 import shop.server.service.ProductService;
+
+import java.security.Principal;
 
 /**
  * @author : Nguyen Quoc Hung
@@ -16,7 +19,7 @@ import shop.server.service.ProductService;
  **/
 
 @RestController
-@RequestMapping("/api/v1/internal")
+@RequestMapping("/api/internal/product")
 @Slf4j
 public class ProductIntApi {
     private final ProductService productService;
@@ -27,7 +30,8 @@ public class ProductIntApi {
 
     // lay DS sp
     @GetMapping("/list")
-    public ApiBaseResp list(@RequestParam SpringDataWebProperties.Pageable pageable, @RequestParam String search) {
+    public ApiBaseResp list(@RequestBody ProductQuery query, Principal principal) {
+        System.out.println(principal.getName());
         return new ApiBaseResp();
     }
 
