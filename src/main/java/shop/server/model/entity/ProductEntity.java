@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,6 +21,7 @@ import java.util.List;
 @Table(name = "PRODUCT")
 public class ProductEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto increment ID
     private long id;
     private String code;
     private String name;
@@ -29,6 +31,10 @@ public class ProductEntity {
     private String category;
     private String brand;
     private String model;
+    private String userCreate;
+    private String userUpdate;
+    private Date createDate;
+    private Date updateDate;
     //SP cha chứa các thông tin tong quat de show ra cho nguoi dung xem,
     //SP con chứa các thông tin cụ thể để bán
     @OneToMany(mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.MERGE,

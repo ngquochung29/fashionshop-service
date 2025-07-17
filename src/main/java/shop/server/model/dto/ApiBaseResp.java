@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 
 import java.sql.Timestamp;
 
@@ -18,7 +19,7 @@ import java.sql.Timestamp;
 @Builder
 @AllArgsConstructor
 public class ApiBaseResp {
-    private HttpStatus status = HttpStatus.OK;
+    private HttpStatusCode status = HttpStatus.OK;
     private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
     private Object data;
 

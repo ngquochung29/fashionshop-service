@@ -21,10 +21,10 @@ public class ProductQuery {
     private Double priceTo;
     private String brand;
     private String model;
-    private String sortBy;
-    private String sortDir;
-    private Integer page;
-    private Integer size;
+    private String sortBy = "id";
+    private String sortDir = "desc";
+    private Integer page = 1;
+    private Integer size = 99999999;
 
     public String getCode() {
         return code;

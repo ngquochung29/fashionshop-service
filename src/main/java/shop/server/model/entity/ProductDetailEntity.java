@@ -20,6 +20,7 @@ import java.util.List;
 @Table(name = "PRODUCT_DETAIL")
 public class ProductDetailEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto increment ID
     private long id;
     private String code;
     private String parentCode;
