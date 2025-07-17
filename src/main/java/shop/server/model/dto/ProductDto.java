@@ -68,7 +68,7 @@ public class ProductDto {
     }
 
     public String getImageUrl() {
-        return imageUrl;
+        return this.imageUrlList == null ? null : String.join(",", this.imageUrlList);
     }
 
     public void setImageUrl(String imageUrl) {
@@ -79,6 +79,9 @@ public class ProductDto {
         return this.imageUrlList = this.imageUrl == null? new ArrayList<>() : List.of(this.imageUrl.split(","));
     }
 
+    public void setImageUrlList(List<String> imageUrlList) {
+        this.imageUrlList = imageUrlList;
+    }
 
     public String getCategory() {
         return category;
