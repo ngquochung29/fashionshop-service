@@ -141,7 +141,7 @@ public class ProductServiceImpl implements ProductService {
         productEntity.setUpdateDate(new Date());
         if (!CommonUtil.isEmpty(productDto.getProductDetails())){
             productEntity.setChildren(productDto.getProductDetails().stream().map(
-                    this::mapToProductDetailEntity
+                    p-> mapToProductDetailEntity(p,productEntity)
             ).collect(Collectors.toList()));
         }
         return productEntity;
@@ -158,7 +158,7 @@ public class ProductServiceImpl implements ProductService {
         return productDetailDto;
     }
 
-    private ProductDetailEntity mapToProductDetailEntity(ProductDto.ProductDetailDto productDetailDto) {
+    private ProductDetailEntity mapToProductDetailEntity(ProductDto.ProductDetailDto productDetailDto,ProductEntity productEntity) {
         ProductDetailEntity productDetailEntity = new ProductDetailEntity();
         productDetailEntity.setCode(productDetailDto.getCode());
         productDetailEntity.setParentCode(productDetailDto.getParentCode());
@@ -166,6 +166,7 @@ public class ProductServiceImpl implements ProductService {
         productDetailEntity.setColor(productDetailDto.getColor());
         productDetailEntity.setPrice(productDetailDto.getPrice());
         productDetailEntity.setQuantity(productDetailDto.getQuantity());
+        productDetailEntity.setParent(productEntity);
         return productDetailEntity;
     }
 }

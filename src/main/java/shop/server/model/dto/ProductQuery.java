@@ -23,7 +23,7 @@ public class ProductQuery {
     private String model;
     private String sortBy = "id";
     private String sortDir = "desc";
-    private Integer page = 1;
+    private Integer page = 0;
     private Integer size = 99999999;
 
     public String getCode() {
