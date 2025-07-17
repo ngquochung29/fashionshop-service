@@ -29,14 +29,14 @@ public class ProductIntApi {
     }
 
     // lay DS sp
-    @GetMapping("/list")
+    @PostMapping("/get-list")
     public ApiBaseResp list(@RequestBody ProductQuery query, Principal principal) {
         System.out.println(principal.getName());
         return new ApiBaseResp();
     }
 
     //Lay SP theo ma Code
-    @GetMapping("/{code}")
+    @GetMapping("/get-by-code/{code}")
     public ApiBaseResp getProduct(@PathVariable String code) {
         return new ApiBaseResp(productService.getProductDtoByCode(code));
     }
