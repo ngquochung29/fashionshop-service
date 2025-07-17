@@ -1,9 +1,11 @@
 package shop.server.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,7 +24,8 @@ public class ProductDto {
     @NotBlank
     private String description;
     private Long totalQuantity;
-    private String[] imageUrl;
+    @JsonIgnore
+    private String imageUrl;
     @NotNull
     private String category;
     @NotNull
@@ -30,6 +33,7 @@ public class ProductDto {
     @NotNull
     private String model;
     private List<ProductDetailDto> productDetails;
+    private List<String> imageUrlList;
 
     public String getCode() {
         return code;
@@ -63,13 +67,18 @@ public class ProductDto {
         this.totalQuantity = totalQuantity;
     }
 
-    public String[] getImageUrl() {
+    public String getImageUrl() {
         return imageUrl;
     }
 
-    public void setImageUrl(String[] imageUrl) {
+    public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    public List<String> getImageUrlList() {
+        return this.imageUrlList = this.imageUrl == null? new ArrayList<>() : List.of(this.imageUrl.split(","));
+    }
+
 
     public String getCategory() {
         return category;
