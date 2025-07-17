@@ -1,8 +1,7 @@
 package shop.server.mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.Mapping;
 import shop.server.model.dto.ProductDto;
 import shop.server.model.entity.ProductEntity;
 
@@ -14,6 +13,8 @@ import shop.server.model.entity.ProductEntity;
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
 
+
     ProductEntity toProductEntity(ProductDto productDto);
+
     ProductDto toProductDto(ProductEntity productEntity);
 }
