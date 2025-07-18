@@ -135,8 +135,6 @@ public class ProductServiceImpl implements ProductService {
         productEntity.setCategory(productDto.getCategory());
         productEntity.setBrand(productDto.getBrand());
         productEntity.setModel(productDto.getModel());
-        productEntity.setUserCreate(Optional.ofNullable(productEntity.getUserCreate()).orElse(JwtUtil.getUsername()));
-        productEntity.setUserUpdate(JwtUtil.getUsername());
         productEntity.setCreateDate(Optional.ofNullable(productEntity.getCreateDate()).orElse(new Date()));
         productEntity.setUpdateDate(new Date());
         if (!CommonUtil.isEmpty(productDto.getProductDetails())){
