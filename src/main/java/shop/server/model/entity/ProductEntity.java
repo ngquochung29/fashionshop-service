@@ -27,12 +27,11 @@ public class ProductEntity {
     private String name;
     private String description;
     private Long totalQuantity;
-    private String imageUrl;
+    private String imageUrls;
+    private String avtUrl;
     private String category;
     private String brand;
     private String model;
-    private String userCreate;
-    private String userUpdate;
     private Date createDate;
     private Date updateDate;
     //SP cha chứa các thông tin tong quat de show ra cho nguoi dung xem,

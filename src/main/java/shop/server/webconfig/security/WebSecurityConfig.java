@@ -40,7 +40,7 @@ public class WebSecurityConfig {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/external/product/**","/api/external/auth/**","/error").permitAll()
+                        .requestMatchers("/api/external/**","/error").permitAll()
                         .requestMatchers("/api/internal/**").authenticated()
                 )
                 .sessionManagement(sess -> sess
