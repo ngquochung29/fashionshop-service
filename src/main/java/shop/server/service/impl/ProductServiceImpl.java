@@ -8,17 +8,17 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import shop.server.exception.FashionException;
+import shop.server.model.dto.ProductDetailDto;
 import shop.server.model.dto.ProductDto;
 import shop.server.model.dto.ProductQuery;
 import shop.server.model.entity.ProductDetailEntity;
 import shop.server.model.entity.ProductEntity;
+import shop.server.model.enums.SaleStatus;
+import shop.server.repo.ProductDetailRepo;
 import shop.server.repo.ProductRepo;
 import shop.server.service.ProductService;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.criteria.Predicate;
@@ -34,9 +34,11 @@ import shop.server.webconfig.security.JwtUtil;
 @Service
 public class ProductServiceImpl implements ProductService {
     private final ProductRepo productRepo;
+    private final ProductDetailRepo productDetailRepo;
 
-    public ProductServiceImpl(ProductRepo productRepo) {
+    public ProductServiceImpl(ProductRepo productRepo, ProductDetailRepo productDetailRepo) {
         this.productRepo = productRepo;
+        this.productDetailRepo = productDetailRepo;
     }
 
 
@@ -44,7 +46,21 @@ public class ProductServiceImpl implements ProductService {
     public ProductDto getProductDtoByCode(String code) {
         ProductEntity productEntity = productRepo.findByCode(code)
                 .orElseThrow(() -> new FashionException(HttpStatus.BAD_GATEWAY, "Product code not exist"));
-        return mapperToProductDto(productEntity);
+        ProductDto productDto = mapperToProductDto(productEntity);
+        List<ProductDetailEntity> productDetailEntities = productDetailRepo.findByParent(productEntity);
+        productDto.setPickTotal(productDetailEntities.size());
+        Set<String> size = new HashSet<>();
+        Set<String> color = new HashSet<>();
+        productDto.setImageUrlSet(productEntity.getImageUrls() == null? new HashSet<>() : Set.of(productEntity.getImageUrls().split(",")));
+        if (!CommonUtil.isEmpty(productDetailEntities)) {
+            productDetailEntities.forEach(pd -> {
+                size.add(pd.getSize());
+                color.add(pd.getColor());
+            });
+        }
+        productDto.setSize(size);
+        productDto.setColor(color);
+        return productDto;
     }
 
     @Override
@@ -83,9 +99,56 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void updateQuantity(Long quantity) {
-
+    public void createProductDetail(ProductDetailDto detailDto) {
+        ProductEntity productEntity = productRepo.findByCode(detailDto.getCode())
+                .orElseThrow(() -> new FashionException(HttpStatus.BAD_REQUEST, "Product code not exist"));
+        ProductDetailEntity productDetailEntity = new ProductDetailEntity();
+        productDetailEntity.setCode(detailDto.getCode());
+        productDetailEntity.setParentCode(detailDto.getParentCode());
+        productDetailEntity.setSize(detailDto.getSize());
+        productDetailEntity.setColor(detailDto.getColor());
+        productDetailEntity.setPrice(detailDto.getPrice());
+        productDetailEntity.setQuantity(detailDto.getQuantity());
+        productDetailEntity.setParent(productEntity);
+        productDetailRepo.save(productDetailEntity);
     }
+
+    @Override
+    public void updateProductDetail(ProductDetailDto detailDto) {
+        ProductDetailEntity productDetailEntity = productDetailRepo.findByCode(detailDto.getCode())
+                .orElseThrow(() -> new FashionException(HttpStatus.BAD_REQUEST, "Product code not exist"));
+        productDetailEntity.setCode(detailDto.getCode());
+        productDetailEntity.setSize(detailDto.getSize());
+        productDetailEntity.setColor(detailDto.getColor());
+        productDetailEntity.setPrice(detailDto.getPrice());
+        productDetailEntity.setQuantity(detailDto.getQuantity());
+        productDetailRepo.save(productDetailEntity);
+    }
+
+    @Override
+    public void delete(String code) {
+        productDetailRepo.deleteByCode(code);
+    }
+
+    @Override
+    public long countProductsDetail(ProductDetailDto detailDto) {
+        List<ProductDetailEntity> productDetailEntities = productDetailRepo.findByParentCode(detailDto.getParentCode());
+
+        return productDetailEntities.stream()
+                .filter(pd -> isValidSize(detailDto, pd) && isValidColor(detailDto, pd))
+                .count();
+    }
+
+    // Kiểm tra nếu Size hợp lệ
+    private boolean isValidSize(ProductDetailDto detailDto, ProductDetailEntity pd) {
+        return detailDto.getSize() == null || detailDto.getSize().equals(pd.getSize());
+    }
+
+    // Kiểm tra nếu Color hợp lệ
+    private boolean isValidColor(ProductDetailDto detailDto, ProductDetailEntity pd) {
+        return detailDto.getColor() == null || detailDto.getColor().equals(pd.getColor());
+    }
+
 
     public static Specification<ProductEntity> filter(ProductQuery productQuery) {
         return (root, query, cb) -> {
@@ -119,12 +182,7 @@ public class ProductServiceImpl implements ProductService {
         productDto.setDescription(productEntity.getDescription());
         productDto.setCategory(productEntity.getCategory());
         productDto.setBrand(productEntity.getBrand());
-        productDto.setModel(productEntity.getModel());
-        if (!CommonUtil.isEmpty(productEntity.getChildren())){
-            productDto.setProductDetails(productEntity.getChildren().stream().map(
-                    this::mapToProductDetailDto
-            ).collect(Collectors.toList()));
-        }
+        productDto.setMode(productEntity.getMode());
         return productDto;
     }
 
@@ -134,29 +192,23 @@ public class ProductServiceImpl implements ProductService {
         productEntity.setDescription(productDto.getDescription());
         productEntity.setCategory(productDto.getCategory());
         productEntity.setBrand(productDto.getBrand());
-        productEntity.setModel(productDto.getModel());
-        productEntity.setCreateDate(Optional.ofNullable(productEntity.getCreateDate()).orElse(new Date()));
-        productEntity.setUpdateDate(new Date());
-        if (!CommonUtil.isEmpty(productDto.getProductDetails())){
-            productEntity.setChildren(productDto.getProductDetails().stream().map(
-                    p-> mapToProductDetailEntity(p,productEntity)
-            ).collect(Collectors.toList()));
-        }
+        productEntity.setMode(productDto.getMode());
+        productEntity.setCreatedAt(Optional.ofNullable(productEntity.getCreatedAt()).orElse(new Date()));
+        productEntity.setUpdatedAt(new Date());
         return productEntity;
     }
 
-    private ProductDto.ProductDetailDto mapToProductDetailDto(ProductDetailEntity productDetailEntity) {
-        ProductDto.ProductDetailDto productDetailDto = new ProductDto.ProductDetailDto();
+    private ProductDetailDto mapToProductDetailDto(ProductDetailEntity productDetailEntity) {
+        ProductDetailDto productDetailDto = new ProductDetailDto();
         productDetailDto.setCode(productDetailEntity.getCode());
         productDetailDto.setParentCode(productDetailEntity.getParentCode());
         productDetailDto.setSize(productDetailEntity.getSize());
         productDetailDto.setColor(productDetailEntity.getColor());
         productDetailDto.setPrice(productDetailEntity.getPrice());
-        productDetailDto.setQuantity(productDetailEntity.getQuantity());
         return productDetailDto;
     }
 
-    private ProductDetailEntity mapToProductDetailEntity(ProductDto.ProductDetailDto productDetailDto,ProductEntity productEntity) {
+    private ProductDetailEntity mapToProductDetailEntity(ProductDetailDto productDetailDto,ProductEntity productEntity) {
         ProductDetailEntity productDetailEntity = new ProductDetailEntity();
         productDetailEntity.setCode(productDetailDto.getCode());
         productDetailEntity.setParentCode(productDetailDto.getParentCode());

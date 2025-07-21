@@ -2,8 +2,10 @@ package shop.server.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import shop.server.model.dto.ProductDetailDto;
 import shop.server.model.dto.ProductDto;
 import shop.server.model.dto.ProductQuery;
+import shop.server.model.enums.SaleStatus;
 
 
 /**
@@ -17,5 +19,9 @@ public interface ProductService {
     void createProduct(ProductDto productDto);
     void updateProduct(ProductDto productDto);
     void deleteProduct(String code);
-    void updateQuantity(Long quantity);
+    void createProductDetail(ProductDetailDto detailDto);
+    void updateProductDetail(ProductDetailDto detailDto);
+    void delete(String code);
+    long countProductsDetail(ProductDetailDto detailDto);
+
 }

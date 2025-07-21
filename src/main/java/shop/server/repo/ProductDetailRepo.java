@@ -1,9 +1,14 @@
 package shop.server.repo;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import shop.server.model.entity.ProductDetailEntity;
 import shop.server.model.entity.ProductEntity;
+import shop.server.model.enums.SaleStatus;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author : Nguyen Quoc Hung
@@ -12,4 +17,8 @@ import shop.server.model.entity.ProductEntity;
  **/
 @Repository
 public interface ProductDetailRepo extends CrudRepository<ProductDetailEntity,Long> {
+    List<ProductDetailEntity> findByParent(ProductEntity parent);
+    List<ProductDetailEntity> findByParentCode(String parentCode);
+    Optional<ProductDetailEntity> findByCode(String code);
+    void deleteByCode(String code);
 }
