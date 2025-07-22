@@ -8,12 +8,12 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import shop.server.exception.FashionException;
+import shop.server.model.dto.PageDto;
 import shop.server.model.dto.ProductDetailDto;
 import shop.server.model.dto.ProductDto;
 import shop.server.model.dto.ProductQuery;
 import shop.server.model.entity.ProductDetailEntity;
 import shop.server.model.entity.ProductEntity;
-import shop.server.model.enums.SaleStatus;
 import shop.server.repo.ProductDetailRepo;
 import shop.server.repo.ProductRepo;
 import shop.server.service.ProductService;
@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 
 import jakarta.persistence.criteria.Predicate;
 import shop.server.util.CommonUtil;
-import shop.server.webconfig.security.JwtUtil;
 
 /**
  * @author : Nguyen Quoc Hung
@@ -48,23 +47,14 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new FashionException(HttpStatus.BAD_GATEWAY, "Product code not exist"));
         ProductDto productDto = mapperToProductDto(productEntity);
         List<ProductDetailEntity> productDetailEntities = productDetailRepo.findByParent(productEntity);
-        productDto.setPickTotal(productDetailEntities.size());
-        Set<String> size = new HashSet<>();
-        Set<String> color = new HashSet<>();
-        productDto.setImageUrlSet(productEntity.getImageUrls() == null? new HashSet<>() : Set.of(productEntity.getImageUrls().split(",")));
-        if (!CommonUtil.isEmpty(productDetailEntities)) {
-            productDetailEntities.forEach(pd -> {
-                size.add(pd.getSize());
-                color.add(pd.getColor());
-            });
+        if (productDetailEntities != null && !productDetailEntities.isEmpty()) {
+            productDto.setProductDetails(productDetailEntities.stream().map(this::mapToProductDetailDto).collect(Collectors.toList()));
         }
-        productDto.setSize(size);
-        productDto.setColor(color);
         return productDto;
     }
 
     @Override
-    public Page<ProductDto> getAllProducts(ProductQuery query) {
+    public PageDto getAllProducts(ProductQuery query) {
         Sort sort = Sort.by(
                 query.getSortDir().equalsIgnoreCase("desc") ?
                         Sort.Direction.DESC : Sort.Direction.ASC,
@@ -72,7 +62,13 @@ public class ProductServiceImpl implements ProductService {
         );
         Pageable pageable = PageRequest.of(query.getPage(), query.getSize(), sort);
         Page<ProductEntity> productEntityPage = productRepo.findAll(filter(query), pageable);
-        return productEntityPage.map(this::mapperToProductDto);
+        List<ProductDto> productDtos = productEntityPage.getContent().stream().map(this::mapperToProductDto).toList();
+        return PageDto.builder().totalPages(productEntityPage.getTotalPages())
+                .pageCurrent(pageable.getPageNumber())
+                .size(pageable.getPageSize())
+                .totalRecords(productEntityPage.getTotalElements())
+                .data(productDtos)
+        .build();
     }
 
     @Override
@@ -109,6 +105,7 @@ public class ProductServiceImpl implements ProductService {
         productDetailEntity.setColor(detailDto.getColor());
         productDetailEntity.setPrice(detailDto.getPrice());
         productDetailEntity.setQuantity(detailDto.getQuantity());
+        productDetailEntity.setImageUrl(detailDto.getImageUrl());
         productDetailEntity.setParent(productEntity);
         productDetailRepo.save(productDetailEntity);
     }
@@ -163,7 +160,7 @@ public class ProductServiceImpl implements ProductService {
                 predicates.add(cb.like(root.get("description"), "%" + productQuery.getDescription() + "%"));
             }
             if (productQuery.getCategory() != null) {
-                predicates.add(cb.equal(root.get("category"), productQuery.getCategory()));
+                predicates.add(cb.like(root.get("category"), "%" + productQuery.getCategory() + "%"));
             }
             if (productQuery.getBrand() != null) {
                 predicates.add(cb.equal(root.get("brand"), productQuery.getBrand()));
@@ -183,6 +180,7 @@ public class ProductServiceImpl implements ProductService {
         productDto.setCategory(productEntity.getCategory());
         productDto.setBrand(productEntity.getBrand());
         productDto.setMode(productEntity.getMode());
+        productDto.setAvtUrl(productEntity.getAvtUrl());
         return productDto;
     }
 

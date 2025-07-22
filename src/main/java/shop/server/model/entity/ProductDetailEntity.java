@@ -29,6 +29,7 @@ public class ProductDetailEntity {
     private String color;
     private Long price;
     private Long quantity;
+    private String imageUrl;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_id", referencedColumnName = "id")

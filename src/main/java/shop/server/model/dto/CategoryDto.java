@@ -1,14 +1,15 @@
 package shop.server.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author : Nguyen Quoc Hung
@@ -20,19 +21,13 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Data
-public class ProductDto {
+public class CategoryDto {
     private String code;
     @NotBlank
     private String name;
     @NotBlank
     private String description;
-    @NotNull
-    private String category;
-    @NotNull
-    private String brand;
-    @NotNull
-    private String mode;
-    private String avtUrl;
-    private List<ProductDetailDto> productDetails;
-
+    @Valid
+    @Size(min = 1) // Optional: chỉ nếu bạn muốn có ít nhất 1 phần tử
+    private List<@Valid CategoryDto> children;
 }

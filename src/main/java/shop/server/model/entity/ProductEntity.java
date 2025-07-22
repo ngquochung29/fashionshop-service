@@ -26,7 +26,7 @@ public class ProductEntity {
     private String code;
     private String name;
     private String description;
-    private String imageUrls;
+    private Integer saleLever;
     private String avtUrl;
     private String category;
     private String brand;
