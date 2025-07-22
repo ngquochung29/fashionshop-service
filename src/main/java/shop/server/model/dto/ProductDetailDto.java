@@ -1,28 +1,26 @@
-package shop.server.model.entity;
+package shop.server.model.dto;
 
-import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import shop.server.model.enums.SaleStatus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author : Nguyen Quoc Hung
  * @mailto : hungnqdatn04@gmail.com
- * @created : 15/7/2025,
+ * @created : 18/7/2025,
  **/
-
-@Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-@Table(name = "PRODUCT_DETAIL")
-public class ProductDetailEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto increment ID
-    private long id;
+@Builder
+public class ProductDetailDto {
+    @NotNull
     private String code;
     private String parentCode;
     private String size;
@@ -30,8 +28,5 @@ public class ProductDetailEntity {
     private Long price;
     private Long quantity;
     private String imageUrl;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "parent_id", referencedColumnName = "id")
-    private ProductEntity parent;
+    private List<SaleStatus> saleStatusList= new ArrayList<>();
 }
