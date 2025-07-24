@@ -43,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto getProductDtoByCode(String code) {
-        ProductEntity productEntity = productRepo.findByCode(code)
+        ProductEntity productEntity = productRepo.findByCodeAndActiveIsTrue(code)
                 .orElseThrow(() -> new FashionException(HttpStatus.BAD_GATEWAY, "Product code not exist"));
         ProductDto productDto = mapperToProductDto(productEntity);
         List<ProductDetailEntity> productDetailEntities = productDetailRepo.findByParent(productEntity);
@@ -76,14 +76,14 @@ public class ProductServiceImpl implements ProductService {
         if (productRepo.existsByCode(productDto.getCode())) {
             throw new FashionException(HttpStatus.CONFLICT, "Product code already exist");
         }
-        ProductEntity productEntity = productRepo.findByCode(productDto.getCode()).orElse(new ProductEntity());
+        ProductEntity productEntity = productRepo.findByCodeAndActiveIsTrue(productDto.getCode()).orElse(new ProductEntity());
         productEntity =mapperToProductEntity(productDto,productEntity);
         productRepo.save(productEntity);
     }
 
     @Override
     public void updateProduct(ProductDto productDto) {
-        ProductEntity productEntity = productRepo.findByCode(productDto.getCode()).orElseThrow(() -> new FashionException(HttpStatus.BAD_REQUEST, "Product code not exist"));
+        ProductEntity productEntity = productRepo.findByCodeAndActiveIsTrue(productDto.getCode()).orElseThrow(() -> new FashionException(HttpStatus.BAD_REQUEST, "Product code not exist"));
         productEntity =mapperToProductEntity(productDto,productEntity);
         productRepo.save(productEntity);
     }
@@ -91,12 +91,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(String code) {
-        productRepo.deleteByCode(code);
+        ProductEntity productEntity = productRepo.findByCodeAndActiveIsTrue(code).orElseThrow(() -> new FashionException(HttpStatus.BAD_REQUEST, "Product code not exist"));
+        productEntity.setActive(false);
+        productRepo.save(productEntity);
     }
 
     @Override
     public void createProductDetail(ProductDetailDto detailDto) {
-        ProductEntity productEntity = productRepo.findByCode(detailDto.getCode())
+        ProductEntity productEntity = productRepo.findByCodeAndActiveIsTrue(detailDto.getCode())
                 .orElseThrow(() -> new FashionException(HttpStatus.BAD_REQUEST, "Product code not exist"));
         ProductDetailEntity productDetailEntity = new ProductDetailEntity();
         productDetailEntity.setCode(detailDto.getCode());
@@ -124,7 +126,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void delete(String code) {
-        productDetailRepo.deleteByCode(code);
+        ProductDetailEntity productDetailEntity = productDetailRepo.findByCode(code)
+                .orElseThrow(() -> new FashionException(HttpStatus.BAD_REQUEST, "Product code not exist"));
+        productDetailEntity.setActive(false);
+        productDetailRepo.save(productDetailEntity);
     }
 
     @Override
@@ -168,6 +173,7 @@ public class ProductServiceImpl implements ProductService {
             if (productQuery.getModel() != null) {
                 predicates.add(cb.equal(root.get("model"), productQuery.getModel()));
             }
+            predicates.add(cb.equal(root.get("active"), true));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }

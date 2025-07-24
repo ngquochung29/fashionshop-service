@@ -16,7 +16,7 @@ import java.util.Optional;
 @Repository
 public interface ProductRepo extends JpaRepository<ProductEntity, Long>,
         JpaSpecificationExecutor<ProductEntity> {
-    Optional<ProductEntity> findByCode(String code);
+    Optional<ProductEntity> findByCodeAndActiveIsTrue(String code);
     void deleteByCode(String code);
     boolean existsByCode(String code);
 }
