@@ -28,5 +28,4 @@ public class ProductDetailDto {
     private Long price;
     private Long quantity;
     private String imageUrl;
-    private List<SaleStatus> saleStatusList= new ArrayList<>();
 }

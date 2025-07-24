@@ -34,5 +34,6 @@ public class ProductDto {
     private String mode;
     private String avtUrl;
     private List<ProductDetailDto> productDetails;
+    private Long discount;
 
 }
