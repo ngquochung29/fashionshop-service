@@ -219,6 +219,7 @@ public class ProductServiceImpl implements ProductService {
         productDetailDto.setColor(productDetailEntity.getColor());
         productDetailDto.setPrice(productDetailEntity.getPrice());
         productDetailDto.setImageUrl(productDetailEntity.getImageUrl());
+        productDetailDto.setQuantity(productDetailEntity.getQuantity());
         return productDetailDto;
     }
 
