@@ -71,4 +71,10 @@ public class CommonUtil {
         int number = random.nextInt(1_000_000); // 0 - 999999
         return String.format("%06d", number); // thêm 0 ở đầu nếu thiếu
     }
+
+    public static String random4(){
+        Random random = new Random();
+        int number = random.nextInt(1_000_000); // 0 - 999999
+        return String.format("%04d", number); // thêm 0 ở đầu nếu thiếu
+    }
 }

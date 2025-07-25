@@ -46,9 +46,9 @@ public class ProductServiceImpl implements ProductService {
         ProductEntity productEntity = productRepo.findByCodeAndActiveIsTrue(code)
                 .orElseThrow(() -> new FashionException(HttpStatus.BAD_GATEWAY, "Product code not exist"));
         ProductDto productDto = mapperToProductDto(productEntity);
-        List<ProductDetailEntity> productDetailEntities = productDetailRepo.findByParentCode(productEntity.getCode());
+        List<ProductDetailEntity> productDetailEntities = productDetailRepo.findByParentCodeOrderByIdDesc(productEntity.getCode());
         if (productDetailEntities != null && !productDetailEntities.isEmpty()) {
-            productDto.setProductDetails(productDetailEntities.stream().map(this::mapToProductDetailDto).collect(Collectors.toList()));
+            productDetailEntities.stream().map(this::mapToProductDetailDto).collect(Collectors.toList());
         }
         return productDto;
     }
@@ -104,8 +104,12 @@ public class ProductServiceImpl implements ProductService {
     public void createProductDetail(ProductDetailDto detailDto) {
         ProductEntity productEntity = productRepo.findByCodeAndActiveIsTrue(detailDto.getParentCode())
                 .orElseThrow(() -> new FashionException(HttpStatus.BAD_REQUEST, "Product code not exist"));
+        String code = detailDto.getParentCode()+"-"+CommonUtil.random4();
+        while (productDetailRepo.existsByCode(code)) {
+            code = "SP"+CommonUtil.random4();
+        }
         ProductDetailEntity productDetailEntity = new ProductDetailEntity();
-        productDetailEntity.setCode(UUID.randomUUID().toString());
+        productDetailEntity.setCode(code);
         productDetailEntity.setParentCode(detailDto.getParentCode());
         productDetailEntity.setSize(detailDto.getSize());
         productDetailEntity.setColor(detailDto.getColor());

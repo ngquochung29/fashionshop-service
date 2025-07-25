@@ -19,6 +19,10 @@ import java.util.Optional;
 public interface ProductDetailRepo extends CrudRepository<ProductDetailEntity,Long> {
     List<ProductDetailEntity> findByParent(ProductEntity parent);
     List<ProductDetailEntity> findByParentCode(String parentCode);
+
+    List<ProductDetailEntity> findByParentCodeOrderByIdDesc(String parentCode);
     Optional<ProductDetailEntity> findByCode(String code);
     void deleteByCode(String code);
+
+    boolean existsByCode(String code);
 }
