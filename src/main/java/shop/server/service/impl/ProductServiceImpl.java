@@ -102,7 +102,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void createProductDetail(ProductDetailDto detailDto) {
-        ProductEntity productEntity = productRepo.findByCodeAndActiveIsTrue(detailDto.getCode())
+        ProductEntity productEntity = productRepo.findByCodeAndActiveIsTrue(detailDto.getParentCode())
                 .orElseThrow(() -> new FashionException(HttpStatus.BAD_REQUEST, "Product code not exist"));
         ProductDetailEntity productDetailEntity = new ProductDetailEntity();
         productDetailEntity.setCode(UUID.randomUUID().toString());
