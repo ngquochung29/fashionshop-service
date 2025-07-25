@@ -17,7 +17,7 @@ import shop.server.model.enums.SaleStatus;
 public interface ProductService {
     ProductDto getProductDtoByCode(String code);
     PageDto getAllProducts(ProductQuery query);
-    void createProduct(ProductDto productDto);
+    String createProduct(ProductDto productDto);
     void updateProduct(ProductDto productDto);
     void deleteProduct(String code);
     void createProductDetail(ProductDetailDto detailDto);

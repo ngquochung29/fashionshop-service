@@ -72,7 +72,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void createProduct(ProductDto productDto) {
+    public String createProduct(ProductDto productDto) {
         ProductEntity productEntity = productRepo.findByCodeAndActiveIsTrue(productDto.getCode()).orElse(new ProductEntity());
         mapperToProductEntity(productDto,productEntity);
         String code = "SP"+CommonUtil.random();
@@ -82,6 +82,7 @@ public class ProductServiceImpl implements ProductService {
         productEntity.setCode(code);
         productEntity.setActive(true);
         productRepo.save(productEntity);
+        return code;
     }
 
     @Override
@@ -104,7 +105,7 @@ public class ProductServiceImpl implements ProductService {
         ProductEntity productEntity = productRepo.findByCodeAndActiveIsTrue(detailDto.getCode())
                 .orElseThrow(() -> new FashionException(HttpStatus.BAD_REQUEST, "Product code not exist"));
         ProductDetailEntity productDetailEntity = new ProductDetailEntity();
-        productDetailEntity.setCode(detailDto.getCode());
+        productDetailEntity.setCode(UUID.randomUUID().toString());
         productDetailEntity.setParentCode(detailDto.getParentCode());
         productDetailEntity.setSize(detailDto.getSize());
         productDetailEntity.setColor(detailDto.getColor());
@@ -112,6 +113,7 @@ public class ProductServiceImpl implements ProductService {
         productDetailEntity.setQuantity(detailDto.getQuantity());
         productDetailEntity.setImageUrl(detailDto.getImageUrl());
         productDetailEntity.setParent(productEntity);
+        productDetailEntity.setActive(true);
         productDetailRepo.save(productDetailEntity);
     }
 
@@ -119,11 +121,11 @@ public class ProductServiceImpl implements ProductService {
     public void updateProductDetail(ProductDetailDto detailDto) {
         ProductDetailEntity productDetailEntity = productDetailRepo.findByCode(detailDto.getCode())
                 .orElseThrow(() -> new FashionException(HttpStatus.BAD_REQUEST, "Product code not exist"));
-        productDetailEntity.setCode(detailDto.getCode());
         productDetailEntity.setSize(detailDto.getSize());
         productDetailEntity.setColor(detailDto.getColor());
         productDetailEntity.setPrice(detailDto.getPrice());
         productDetailEntity.setQuantity(detailDto.getQuantity());
+        productDetailEntity.setImageUrl(detailDto.getImageUrl());
         productDetailRepo.save(productDetailEntity);
     }
 
