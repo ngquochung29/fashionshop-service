@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author : Nguyen Quoc Hung
@@ -63,5 +64,11 @@ public class CommonUtil {
         } catch (IOException e) {
         }
         return new ArrayList<>();
+    }
+
+    public static String random(){
+        Random random = new Random();
+        int number = random.nextInt(1_000_000); // 0 - 999999
+        return String.format("%06d", number); // thêm 0 ở đầu nếu thiếu
     }
 }

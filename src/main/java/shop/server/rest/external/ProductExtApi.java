@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.web.bind.annotation.*;
 import shop.server.model.dto.ApiBaseResp;
+import shop.server.model.dto.ProductDetailDto;
 import shop.server.model.dto.ProductDto;
 import shop.server.model.dto.ProductQuery;
 import shop.server.service.ProductService;
@@ -44,6 +45,19 @@ public class ProductExtApi {
         productService.createProduct(productDto);
         return new ApiBaseResp();
     }
+
+    @PostMapping("/create/detail")
+    public ApiBaseResp createProduct(@Valid @RequestBody ProductDetailDto productDetailDto) {
+        productService.createProductDetail(productDetailDto);
+        return new ApiBaseResp();
+    }
+
+    @PutMapping("/update/detail")
+    public ApiBaseResp updateProduct(@RequestBody ProductDetailDto productDetailDto) {
+        productService.updateProductDetail(productDetailDto);
+        return new ApiBaseResp();
+    }
+
     // sua SP
     @PutMapping("/update")
     public ApiBaseResp updateProduct(@RequestBody ProductDto productDto) {
