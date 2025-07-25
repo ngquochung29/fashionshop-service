@@ -48,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
         ProductDto productDto = mapperToProductDto(productEntity);
         List<ProductDetailEntity> productDetailEntities = productDetailRepo.findByParentCodeOrderByIdDesc(productEntity.getCode());
         if (productDetailEntities != null && !productDetailEntities.isEmpty()) {
-            productDetailEntities.stream().map(this::mapToProductDetailDto).collect(Collectors.toList());
+            productDto.setProductDetails(productDetailEntities.stream().map(this::mapToProductDetailDto).collect(Collectors.toList()));
         }
         return productDto;
     }
