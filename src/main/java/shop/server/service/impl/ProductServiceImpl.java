@@ -46,7 +46,7 @@ public class ProductServiceImpl implements ProductService {
         ProductEntity productEntity = productRepo.findByCodeAndActiveIsTrue(code)
                 .orElseThrow(() -> new FashionException(HttpStatus.BAD_GATEWAY, "Product code not exist"));
         ProductDto productDto = mapperToProductDto(productEntity);
-        List<ProductDetailEntity> productDetailEntities = productDetailRepo.findByParent(productEntity);
+        List<ProductDetailEntity> productDetailEntities = productDetailRepo.findByParentCode(productEntity.getCode());
         if (productDetailEntities != null && !productDetailEntities.isEmpty()) {
             productDto.setProductDetails(productDetailEntities.stream().map(this::mapToProductDetailDto).collect(Collectors.toList()));
         }
@@ -73,18 +73,21 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void createProduct(ProductDto productDto) {
-        if (productRepo.existsByCode(productDto.getCode())) {
-            throw new FashionException(HttpStatus.CONFLICT, "Product code already exist");
-        }
         ProductEntity productEntity = productRepo.findByCodeAndActiveIsTrue(productDto.getCode()).orElse(new ProductEntity());
-        productEntity =mapperToProductEntity(productDto,productEntity);
+        mapperToProductEntity(productDto,productEntity);
+        String code = "SP"+CommonUtil.random();
+        while (productRepo.existsByCode(code)) {
+            code = "SP"+CommonUtil.random();
+        }
+        productEntity.setCode(code);
+        productEntity.setActive(true);
         productRepo.save(productEntity);
     }
 
     @Override
     public void updateProduct(ProductDto productDto) {
         ProductEntity productEntity = productRepo.findByCodeAndActiveIsTrue(productDto.getCode()).orElseThrow(() -> new FashionException(HttpStatus.BAD_REQUEST, "Product code not exist"));
-        productEntity =mapperToProductEntity(productDto,productEntity);
+        mapperToProductEntity(productDto,productEntity);
         productRepo.save(productEntity);
     }
 
@@ -155,23 +158,23 @@ public class ProductServiceImpl implements ProductService {
     public static Specification<ProductEntity> filter(ProductQuery productQuery) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (productQuery.getCode() != null) {
-                predicates.add(cb.equal(root.get("code"), productQuery.getCode()));
+            if (!CommonUtil.isEmpty(productQuery.getQuery())) {
+                String pattern = "%" + productQuery.getQuery().toLowerCase() + "%";
+
+                Predicate codeLike = cb.like(cb.lower(root.get("code")), pattern);
+                Predicate nameLike = cb.like(cb.lower(root.get("name")), pattern);
+                Predicate descLike = cb.like(cb.lower(root.get("description")), pattern);
+                Predicate cateLike = cb.like(cb.lower(root.get("category")), pattern);
+                Predicate brandLike = cb.like(cb.lower(root.get("brand")), pattern);
+                Predicate modeLike = cb.like(cb.lower(root.get("mode")), pattern);
+
+                predicates.add(cb.or(codeLike, nameLike, descLike,cateLike,brandLike,modeLike));
             }
-            if (productQuery.getName() != null) {
-                predicates.add(cb.like(root.get("name"), "%" + productQuery.getName() + "%"));
-            }
-            if (productQuery.getDescription() != null) {
-                predicates.add(cb.like(root.get("description"), "%" + productQuery.getDescription() + "%"));
-            }
-            if (productQuery.getCategory() != null) {
+            if (!CommonUtil.isEmpty(productQuery.getCategory()) ) {
                 predicates.add(cb.like(root.get("category"), "%" + productQuery.getCategory() + "%"));
             }
-            if (productQuery.getBrand() != null) {
+            if (!CommonUtil.isEmpty(productQuery.getBrand()) ) {
                 predicates.add(cb.equal(root.get("brand"), productQuery.getBrand()));
-            }
-            if (productQuery.getModel() != null) {
-                predicates.add(cb.equal(root.get("model"), productQuery.getModel()));
             }
             predicates.add(cb.equal(root.get("active"), true));
             return cb.and(predicates.toArray(new Predicate[0]));
@@ -190,7 +193,7 @@ public class ProductServiceImpl implements ProductService {
         return productDto;
     }
 
-    private ProductEntity mapperToProductEntity(ProductDto productDto,ProductEntity productEntity) {
+    private void mapperToProductEntity(ProductDto productDto,ProductEntity productEntity) {
         productEntity.setCode(productDto.getCode());
         productEntity.setName(productDto.getName());
         productEntity.setDescription(productDto.getDescription());
@@ -199,7 +202,6 @@ public class ProductServiceImpl implements ProductService {
         productEntity.setMode(productDto.getMode());
         productEntity.setCreatedAt(Optional.ofNullable(productEntity.getCreatedAt()).orElse(new Date()));
         productEntity.setUpdatedAt(new Date());
-        return productEntity;
     }
 
     private ProductDetailDto mapToProductDetailDto(ProductDetailEntity productDetailEntity) {
@@ -209,6 +211,7 @@ public class ProductServiceImpl implements ProductService {
         productDetailDto.setSize(productDetailEntity.getSize());
         productDetailDto.setColor(productDetailEntity.getColor());
         productDetailDto.setPrice(productDetailEntity.getPrice());
+        productDetailDto.setImageUrl(productDetailEntity.getImageUrl());
         return productDetailDto;
     }
 
