@@ -203,6 +203,7 @@ public class ProductServiceImpl implements ProductService {
         productEntity.setBrand(productDto.getBrand());
         productEntity.setMode(productDto.getMode());
         productEntity.setCreatedAt(Optional.ofNullable(productEntity.getCreatedAt()).orElse(new Date()));
+        productEntity.setAvtUrl(productDto.getAvtUrl());
         productEntity.setUpdatedAt(new Date());
     }
 
