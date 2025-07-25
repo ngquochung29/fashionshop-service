@@ -42,8 +42,7 @@ public class ProductExtApi {
     //Them SP
     @PostMapping("/create")
     public ApiBaseResp createProduct(@Valid @RequestBody ProductDto productDto) {
-        productService.createProduct(productDto);
-        return new ApiBaseResp();
+        return new ApiBaseResp(productService.createProduct(productDto));
     }
 
     @PostMapping("/create/detail")
