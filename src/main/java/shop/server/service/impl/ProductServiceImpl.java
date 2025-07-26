@@ -61,15 +61,41 @@ public class ProductServiceImpl implements ProductService {
                 query.getSortBy()
         );
         Pageable pageable = PageRequest.of(query.getPage(), query.getSize(), sort);
+
+        // 1. Tìm sản phẩm với filter
         Page<ProductEntity> productEntityPage = productRepo.findAll(filter(query), pageable);
-        List<ProductDto> productDtos = productEntityPage.getContent().stream().map(this::mapperToProductDto).toList();
-        return PageDto.builder().totalPages(productEntityPage.getTotalPages())
+
+        // 2. Lấy danh sách mã sản phẩm
+        List<String> parentCodes = productEntityPage.getContent().stream()
+                .map(ProductEntity::getCode)
+                .toList();
+
+        // 3. Lấy min(price) theo parentCode
+        List<Object[]> minPriceList = productDetailRepo.findMinPricesByParentCodes(parentCodes);
+
+        // 4. Convert sang Map
+        Map<String, Long> minPriceMap = minPriceList.stream()
+                .collect(Collectors.toMap(
+                        row -> (String) row[0],
+                        row -> (Long) row[1]
+                ));
+
+        // 5. Map sang DTO và gán minPrice
+        List<ProductDto> productDtos = productEntityPage.getContent().stream().map(p -> {
+            ProductDto dto = mapperToProductDto(p);
+            dto.setPrice(minPriceMap.getOrDefault(p.getCode(), 0L)); // Gán giá nếu có
+            return dto;
+        }).toList();
+
+        return PageDto.builder()
+                .totalPages(productEntityPage.getTotalPages())
                 .pageCurrent(pageable.getPageNumber())
                 .size(pageable.getPageSize())
                 .totalRecords(productEntityPage.getTotalElements())
                 .data(productDtos)
-        .build();
+                .build();
     }
+
 
     @Override
     public String createProduct(ProductDto productDto) {

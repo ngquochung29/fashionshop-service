@@ -20,8 +20,6 @@ import java.util.List;
 @Data
 public class BrandDto {
     private String code;
-    @NotBlank
     private String name;
-    @NotBlank
-    private String description;
+    private String logo;
 }

@@ -31,7 +31,7 @@ public class ProductIntApi {
     // lay DS sp
     @PostMapping("/get-list")
     public ApiBaseResp list(@RequestBody ProductQuery query, Principal principal) {
-        System.out.println(principal.getName());
+
         return new ApiBaseResp();
     }
 

@@ -2,7 +2,9 @@ package shop.server.repo;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import shop.server.model.dto.MinPriceProjection;
 import shop.server.model.entity.ProductDetailEntity;
 import shop.server.model.entity.ProductEntity;
 import shop.server.model.enums.SaleStatus;
@@ -21,6 +23,9 @@ public interface ProductDetailRepo extends CrudRepository<ProductDetailEntity,Lo
     List<ProductDetailEntity> findByParentCode(String parentCode);
 
     List<ProductDetailEntity> findByParentCodeOrderByIdDesc(String parentCode);
+
+    @Query("SELECT pd.parentCode, MIN(pd.price) FROM ProductDetailEntity pd WHERE pd.parentCode IN :parentCodes GROUP BY pd.parentCode")
+    List<Object[]> findMinPricesByParentCodes(@Param("parentCodes") List<String> parentCodes);
     Optional<ProductDetailEntity> findByCode(String code);
     void deleteByCode(String code);
 
