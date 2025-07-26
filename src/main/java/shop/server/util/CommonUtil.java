@@ -59,6 +59,9 @@ public class CommonUtil {
     }
 
     public static <T> List<T> readList(String str, Class<? extends Collection> type, Class<T> elementType) {
+        if (str==null || str.equals("") || str.equals("[]")){
+            return new ArrayList<>();
+        }
         try {
             return mapper.readValue(str, mapper.getTypeFactory().constructCollectionType(type, elementType));
         } catch (IOException e) {

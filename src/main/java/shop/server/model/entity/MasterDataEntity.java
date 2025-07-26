@@ -19,7 +19,7 @@ public class MasterDataEntity {
 
     @Size(max = 50)
     @Column(name = "type", length = 50)
-    private MasterDataType type;
+    private String type;
 
     @Nationalized
     @Lob

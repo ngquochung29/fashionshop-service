@@ -23,11 +23,11 @@ import java.util.List;
 @Data
 public class CategoryDto {
     private String code;
-    @NotBlank
+//    @NotBlank
     private String name;
-    @NotBlank
-    private String description;
-    @Valid
-    @Size(min = 1) // Optional: chỉ nếu bạn muốn có ít nhất 1 phần tử
-    private List<@Valid CategoryDto> children;
+//    @NotBlank
+    private String image;
+//    @Valid
+//    @Size(min = 1) // Optional: chỉ nếu bạn muốn có ít nhất 1 phần tử
+    private List<@Valid CategoryDto> child;
 }
