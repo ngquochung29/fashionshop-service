@@ -14,5 +14,5 @@ import java.util.Optional;
  **/
 @Repository
 public interface MasterDataRepo extends CrudRepository<MasterDataEntity,Integer> {
-    Optional<MasterDataEntity> findByType(MasterDataType type);
+    Optional<MasterDataEntity> findByType(String type);
 }

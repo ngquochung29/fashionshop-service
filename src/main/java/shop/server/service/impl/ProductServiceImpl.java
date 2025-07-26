@@ -177,7 +177,11 @@ public class ProductServiceImpl implements ProductService {
                 predicates.add(cb.or(codeLike, nameLike, descLike,cateLike,brandLike,modeLike));
             }
             if (!CommonUtil.isEmpty(productQuery.getCategory()) ) {
-                predicates.add(cb.like(root.get("category"), "%" + productQuery.getCategory() + "%"));
+                if (productQuery.getCategory().length()>6){
+                    predicates.add(cb.equal(root.get("category"),   productQuery.getCategory()));
+                }else {
+                    predicates.add(cb.like(root.get("category"),   productQuery.getCategory() + "%"));
+                }
             }
             if (!CommonUtil.isEmpty(productQuery.getBrand()) ) {
                 predicates.add(cb.equal(root.get("brand"), productQuery.getBrand()));

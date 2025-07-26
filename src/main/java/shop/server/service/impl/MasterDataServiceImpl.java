@@ -23,15 +23,15 @@ public class MasterDataServiceImpl implements MasterDataService {
 
     @Override
     public void save(List<?> object, MasterDataType type) {
-        MasterDataEntity entity = masterDataRepo.findByType(type).orElse(new MasterDataEntity());
-        entity.setType(type);
+        MasterDataEntity entity = masterDataRepo.findByType(type.name()).orElse(new MasterDataEntity());
+        entity.setType(type.name());
         entity.setJsonData(CommonUtil.writeValue(object));
         masterDataRepo.save(entity);
     }
 
     @Override
     public List<Object> getData(MasterDataType type) {
-        MasterDataEntity entity = masterDataRepo.findByType(type).orElse(new MasterDataEntity());
+        MasterDataEntity entity = masterDataRepo.findByType(type.name()).orElse(new MasterDataEntity());
         return CommonUtil.readList(entity.getJsonData(),Object.class);
     }
 }
